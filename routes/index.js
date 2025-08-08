@@ -65,7 +65,7 @@ router.post('/:isletme/random_3_songs', (req, res) => {
 
     if (!veriler[isletme]) veriler[isletme] = {};
     veriler[isletme].random_3_songs = songs;
-
+    veriler[isletme].sayac = [0, 0, 0];
     res.json({ success: true });
 });
 
@@ -88,6 +88,46 @@ router.get('/yazilimci_minikler', (req, res) => {
     // 'public' klasörü bir üstteyse, '..' ile yukarı çık
     res.sendFile(path.join(__dirname, '..', 'public', 'yazilimci_minikler.html'));
 });
+
+
+
+// Şarkı oylama endpoint'leri
+router.post('/:isletme/vote/:index', (req, res) => {
+    const isletme = req.params.isletme;
+    const index = parseInt(req.params.index);
+
+    if (!veriler[isletme] || !veriler[isletme].random_3_songs) {
+        return res.status(404).json({ mesaj: 'random_3_songs verisi bulunamadı' });
+    }
+
+    if (isNaN(index) || index < 0 || index > 2) {
+        return res.status(400).json({ mesaj: 'Geçersiz şarkı indexi (0-2 olmalı)' });
+    }
+
+    // Eğer sayaç dizisi yoksa, başlat
+    if (!veriler[isletme].sayac) {
+        veriler[isletme].sayac = [0, 0, 0];
+    }
+
+    veriler[isletme].sayac[index]++;
+    res.json({ mesaj: `${index + 1}. şarkıya oy verildi`, sayac: veriler[isletme].sayac });
+});
+
+// Sayaç verisini döndüren endpoint
+router.get('/:isletme/sayac', (req, res) => {
+    const isletme = req.params.isletme;
+
+    if (!veriler[isletme] || !veriler[isletme].sayac) {
+        return res.status(404).json({ mesaj: 'Sayac verisi bulunamadı' });
+    }
+
+    res.json({ sayac: veriler[isletme].sayac });
+});
+
+
+
+
+
 
 
 router.get('/yazilimci_minikler/abdullah', (req, res) => {
