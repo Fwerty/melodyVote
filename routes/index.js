@@ -72,15 +72,46 @@ router.post('/:isletme/random_3_songs', (req, res) => {
 
 
 // GET: veriyi döndür
-router.get('/:isletme/random_3_songs', (req, res) => {
+// "isletme/vote/0" endpoint'i: İlk şarkıya oy verir
+router.post('/:isletme/vote/0', (req, res) => {
     const isletme = req.params.isletme;
-    const data = veriler[isletme];
 
-    if (!data || !data.random_3_songs) {
-        return res.status(404).json({ error: 'random_3_songs verisi yok!' });
+    if (!veriler[isletme] || !veriler[isletme].random_3_data) {
+        return res.status(404).json({ mesaj: 'Veri bulunamadı' });
     }
 
-    res.json({ random_3_songs: data.random_3_songs });
+    // İlk şarkıya oy ver
+    veriler[isletme].sayac[0]++;
+
+    res.json({ mesaj: 'İlk şarkıya oy verildi', sayac: veriler[isletme].sayac });
+});
+
+// "isletme/vote/1" endpoint'i: İkinci şarkıya oy verir
+router.post('/:isletme/vote/1', (req, res) => {
+    const isletme = req.params.isletme;
+
+    if (!veriler[isletme] || !veriler[isletme].random_3_data) {
+        return res.status(404).json({ mesaj: 'Veri bulunamadı' });
+    }
+
+    // İkinci şarkıya oy ver
+    veriler[isletme].sayac[1]++;
+
+    res.json({ mesaj: 'İkinci şarkıya oy verildi', sayac: veriler[isletme].sayac });
+});
+
+// "isletme/vote/2" endpoint'i: Üçüncü şarkıya oy verir
+router.post('/:isletme/vote/2', (req, res) => {
+    const isletme = req.params.isletme;
+
+    if (!veriler[isletme] || !veriler[isletme].random_3_data) {
+        return res.status(404).json({ mesaj: 'Veri bulunamadı' });
+    }
+
+    // Üçüncü şarkıya oy ver
+    veriler[isletme].sayac[2]++;
+
+    res.json({ mesaj: 'Üçüncü şarkıya oy verildi', sayac: veriler[isletme].sayac });
 });
 
 
