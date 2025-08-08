@@ -26,19 +26,18 @@ async function loadRandomSongs() {
         const json = await res.json();
 
         const list = document.getElementById('randomSongs');
-        list.innerHTML = ''; // Eski listeyi temizle
+        list.innerHTML = ''; // Önceki listeyi temizle
 
         json.random_3_songs.forEach((song, index) => {
             const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = song.url;
-            a.textContent = song.title;
-            a.target = '_blank';
+            const span = document.createElement('span');
+            span.textContent = song.title;
+            span.style.cursor = 'pointer';
+            span.style.textDecoration = 'underline';
+            span.style.color = '#007bff';
 
-            // 🗳️ Oy verme işlemi: linke tıklanınca oy gönder
-            a.addEventListener('click', async (event) => {
-                event.preventDefault(); // URL'yi açmayı engeller
-
+            // 🗳️ Tıklanınca oy gönder
+            span.addEventListener('click', async () => {
                 try {
                     await fetch(`/${isletme}/vote/${index}`, {
                         method: 'POST'
@@ -50,8 +49,7 @@ async function loadRandomSongs() {
                 }
             });
 
-
-            li.appendChild(a);
+            li.appendChild(span);
             list.appendChild(li);
         });
     } catch (e) {
