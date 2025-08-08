@@ -84,40 +84,6 @@ router.get('/:isletme/random_3_songs', (req, res) => {
 });
 
 
-
-router.post('/:isletme/vote/:index', (req, res) => {
-    const isletme = req.params.isletme;
-    const index = Number(req.params.index);
-
-    if (!gecerliIndis(index)) {
-        return res.status(400).json({ hata: 'index 0‑2 aralığında olmalı.' });
-    }
-    if (!veriler[isletme] || !veriler[isletme].sayac) {
-        return res.status(404).json({ hata: 'Veri bulunamadı.' });
-    }
-
-    veriler[isletme].sayac[index] += 1;
-
-    res.json({
-        mesaj: `#${index + 1}. şarkıya oy verildi`,
-        sayac: veriler[isletme].sayac,
-    });
-});
-
-
-router.get('/:isletme/sayac', (req, res) => {
-    const { isletme } = req.params;
-
-    if (!veriler[isletme] || !veriler[isletme].sayac) {
-        return res.status(404).json({ hata: 'Sayaç verisi bulunamadı.' });
-    }
-
-    res.json({ sayac: veriler[isletme].sayac });
-});
-
-
-
-
 router.get('/yazilimci_minikler', (req, res) => {
     // 'public' klasörü bir üstteyse, '..' ile yukarı çık
     res.sendFile(path.join(__dirname, '..', 'public', 'yazilimci_minikler.html'));
