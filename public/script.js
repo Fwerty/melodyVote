@@ -43,12 +43,37 @@ async function loadRandomSongs() {
     }
 }
 
+// 🆕 Oy sayacı verisini yükle
+async function loadVoteCounts() {
+    try {
+        const res = await fetch(`/${isletme}/sayac`);
+        if (!res.ok) throw new Error('Oy sayacı verisi alınamadı');
+        const json = await res.json();
+
+        const list = document.getElementById('voteCounts');
+        list.innerHTML = ''; // Önceki verileri temizle
+
+        json.sayac.forEach((count, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${index + 1}. şarkı: ${count} oy`;
+            list.appendChild(li);
+        });
+    } catch (e) {
+        document.getElementById('voteCounts').innerHTML = '<li>Veri alınamadı</li>';
+        console.error(e);
+    }
+}
+
+
 // İlk yükleme
 loadSong();
 loadRandomSongs();
+loadVoteCounts();
 
 // Periyodik güncelleme
 setInterval(() => {
     loadSong();
     loadRandomSongs();
+    loadVoteCounts();
 }, 5000);
+
