@@ -43,45 +43,45 @@ router.get('/:isletme/current_song', (req, res) => {
 
 
 // POST: veriyi güncelle
-// router.post('/:isletme/random_3_songs', (req, res) => {
-//     const isletme = req.params.isletme;
-//     const apiKeyHeader = req.headers['x-api-key'];
-//     const expectedKey = process.env[isletme];
+router.post('/:isletme/random_3_songs', (req, res) => {
+    const isletme = req.params.isletme;
+    const apiKeyHeader = req.headers['x-api-key'];
+    const expectedKey = process.env[isletme];
 
-//     if (!expectedKey || apiKeyHeader !== expectedKey) {
-//         return res.status(403).json({ error: 'Geçersiz API Key' });
-//     }
+    if (!expectedKey || apiKeyHeader !== expectedKey) {
+        return res.status(403).json({ error: 'Geçersiz API Key' });
+    }
 
-//     const songs = req.body.songs || req.body; // Hem songs objesi hem de doğrudan dizi kabul et
+    const songs = req.body.songs || req.body; // Hem songs objesi hem de doğrudan dizi kabul et
 
-//     if (!Array.isArray(songs) || songs.length !== 3) {
-//         return res.status(400).json({ error: 'Tam olarak 3 şarkı içeren bir JSON dizisi gönderin.' });
-//     }
+    if (!Array.isArray(songs) || songs.length !== 3) {
+        return res.status(400).json({ error: 'Tam olarak 3 şarkı içeren bir JSON dizisi gönderin.' });
+    }
 
-//     const invalid = songs.find(s => !s || typeof s.title !== 'string' || typeof s.url !== 'string');
-//     if (invalid) {
-//         return res.status(400).json({ error: 'Her şarkının "title" ve "url" alanı olmalı.' });
-//     }
+    const invalid = songs.find(s => !s || typeof s.title !== 'string' || typeof s.url !== 'string');
+    if (invalid) {
+        return res.status(400).json({ error: 'Her şarkının "title" ve "url" alanı olmalı.' });
+    }
 
-//     if (!veriler[isletme]) veriler[isletme] = {};
-//     veriler[isletme].random_3_songs = songs;
+    if (!veriler[isletme]) veriler[isletme] = {};
+    veriler[isletme].random_3_songs = songs;
 
-//     res.json({ success: true });
-// });
+    res.json({ success: true });
+});
 
 
 
 // GET: veriyi döndür
-router.get('/:isletme/random_3_songs', (req, res) => {
-    const isletme = req.params.isletme;
-    const data = veriler[isletme];
+// router.get('/:isletme/random_3_songs', (req, res) => {
+//     const isletme = req.params.isletme;
+//     const data = veriler[isletme];
 
-    if (!data || !data.random_3_songs) {
-        return res.status(404).json({ error: 'random_3_songs verisi yok!' });
-    }
+//     if (!data || !data.random_3_songs) {
+//         return res.status(404).json({ error: 'random_3_songs verisi yok!' });
+//     }
 
-    res.json({ random_3_songs: data.random_3_songs });
-});
+//     res.json({ random_3_songs: data.random_3_songs });
+// });
 
 
 router.get('/yazilimci_minikler', (req, res) => {
