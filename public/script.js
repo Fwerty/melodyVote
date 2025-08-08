@@ -26,7 +26,10 @@ async function loadRandomSongs() {
         const json = await res.json();
 
         const list = document.getElementById('randomSongs');
-        list.innerHTML = ''; // Önceki listeyi temizle
+        list.innerHTML = '';
+
+        // 🧠 Oy verme kilidini sıfırla (şarkılar değiştiğinde)
+        sessionStorage.setItem('hasVoted', 'false');
 
         json.random_3_songs.forEach((song, index) => {
             const li = document.createElement('li');
@@ -36,14 +39,22 @@ async function loadRandomSongs() {
             span.style.textDecoration = 'underline';
             span.style.color = '#007bff';
 
-            // 🗳️ Tıklanınca oy gönder
             span.addEventListener('click', async () => {
+                const hasVoted = sessionStorage.getItem('hasVoted') === 'true';
+                if (hasVoted) {
+                    alert('Sadece bir kez oy verebilirsiniz. Şarkılar değişene kadar tekrar oy veremezsiniz.');
+                    return;
+                }
+
                 try {
                     await fetch(`/${isletme}/vote/${index}`, {
                         method: 'POST'
                     });
                     console.log(`${index}. şarkıya oy verildi`);
-                    loadVoteCounts(); // Oy sayısını güncelle
+                    sessionStorage.setItem('hasVoted', 'true'); // 🔒 Oy kilitle
+                    span.style.fontWeight = 'bold';
+                    span.textContent += ' ✅ Oy verildi!';
+                    loadVoteCounts();
                 } catch (e) {
                     console.error('Oy gönderilemedi:', e);
                 }
