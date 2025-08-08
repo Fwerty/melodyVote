@@ -36,7 +36,9 @@ async function loadRandomSongs() {
             a.target = '_blank';
 
             // 🗳️ Oy verme işlemi: linke tıklanınca oy gönder
-            a.addEventListener('click', async () => {
+            a.addEventListener('click', async (event) => {
+                event.preventDefault(); // URL'yi açmayı engeller
+
                 try {
                     await fetch(`/${isletme}/vote/${index}`, {
                         method: 'POST'
@@ -47,6 +49,7 @@ async function loadRandomSongs() {
                     console.error('Oy gönderilemedi:', e);
                 }
             });
+
 
             li.appendChild(a);
             list.appendChild(li);
