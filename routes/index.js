@@ -49,30 +49,24 @@ router.post('/:isletme/random_3_songs', (req, res) => {
     const expectedKey = process.env[isletme];
 
     if (!expectedKey || apiKeyHeader !== expectedKey) {
-        return res.status(403).json({ hata: 'Geçersiz API‑Key' });
+        return res.status(403).json({ error: 'Geçersiz API Key' });
     }
 
-    // İstemci hem { songs: [...] } hem de doğrudan [...] gönderebilsin
-    const songs = Array.isArray(req.body.songs) ? req.body.songs : req.body;
+    const songs = req.body.songs || req.body; // Hem songs objesi hem de doğrudan dizi kabul et
 
-    // Doğrulamalar
     if (!Array.isArray(songs) || songs.length !== 3) {
-        return res.status(400).json({ hata: 'Tam olarak 3 şarkı içeren bir JSON dizisi gönderin.' });
-    }
-    const hatali = songs.find(
-        s => !s || typeof s.title !== 'string' || typeof s.url !== 'string',
-    );
-    if (hatali) {
-        return res.status(400).json({ hata: 'Her şarkının “title” ve “url” alanı olmalı.' });
+        return res.status(400).json({ error: 'Tam olarak 3 şarkı içeren bir JSON dizisi gönderin.' });
     }
 
-    // Belleğe kaydet
-    veriler[isletme] = {
-        random_3_songs: songs,
-        sayac: [0, 0, 0],
-    };
+    const invalid = songs.find(s => !s || typeof s.title !== 'string' || typeof s.url !== 'string');
+    if (invalid) {
+        return res.status(400).json({ error: 'Her şarkının "title" ve "url" alanı olmalı.' });
+    }
 
-    res.json({ basarili: true });
+    if (!veriler[isletme]) veriler[isletme] = {};
+    veriler[isletme].random_3_songs = songs;
+
+    res.json({ success: true });
 });
 
 
