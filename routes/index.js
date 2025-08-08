@@ -72,16 +72,16 @@ router.post('/:isletme/random_3_songs', (req, res) => {
 
 
 // GET: veriyi döndür
-// router.get('/:isletme/random_3_songs', (req, res) => {
-//     const isletme = req.params.isletme;
-//     const data = veriler[isletme];
+router.get('/:isletme/random_3_songs', (req, res) => {
+    const isletme = req.params.isletme;
+    const data = veriler[isletme];
 
-//     if (!data || !data.random_3_songs) {
-//         return res.status(404).json({ error: 'random_3_songs verisi yok!' });
-//     }
+    if (!data || !data.random_3_songs) {
+        return res.status(404).json({ error: 'random_3_songs verisi yok!' });
+    }
 
-//     res.json({ random_3_songs: data.random_3_songs });
-// });
+    res.json({ random_3_songs: data.random_3_songs });
+});
 
 
 router.get('/yazilimci_minikler', (req, res) => {
