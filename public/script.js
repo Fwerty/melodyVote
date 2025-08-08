@@ -18,6 +18,12 @@ async function loadSong() {
     }
 }
 
+
+function generateSongSetKey(songs) {
+    // Şarkı başlıklarını birleştirip basit bir anahtar oluştur
+    return songs.map(song => song.title).join('|');
+}
+
 // 🆕 Yeni fonksiyon: random_3_songs
 async function loadRandomSongs() {
     try {
@@ -28,8 +34,9 @@ async function loadRandomSongs() {
         const list = document.getElementById('randomSongs');
         list.innerHTML = '';
 
-        // 🧠 Oy verme kilidini sıfırla (şarkılar değiştiğinde)
-        sessionStorage.setItem('hasVoted', 'false');
+        const songSetKey = generateSongSetKey(json.random_3_songs);
+        const voteStatus = JSON.parse(localStorage.getItem('voteStatus') || '{}');
+        const hasVoted = voteStatus[songSetKey] === true;
 
         json.random_3_songs.forEach((song, index) => {
             const li = document.createElement('li');
@@ -40,9 +47,8 @@ async function loadRandomSongs() {
             span.style.color = '#007bff';
 
             span.addEventListener('click', async () => {
-                const hasVoted = sessionStorage.getItem('hasVoted') === 'true';
                 if (hasVoted) {
-                    alert('Sadece bir kez oy verebilirsiniz. Şarkılar değişene kadar tekrar oy veremezsiniz.');
+                    alert('Bu şarkı seti için zaten oy verdiniz. Yeni şarkılar gelene kadar tekrar oy veremezsiniz.');
                     return;
                 }
 
@@ -51,7 +57,11 @@ async function loadRandomSongs() {
                         method: 'POST'
                     });
                     console.log(`${index}. şarkıya oy verildi`);
-                    sessionStorage.setItem('hasVoted', 'true'); // 🔒 Oy kilitle
+
+                    // 🔒 Oy verildiğini kaydet
+                    voteStatus[songSetKey] = true;
+                    localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
+
                     span.style.fontWeight = 'bold';
                     span.textContent += ' ✅ Oy verildi!';
                     loadVoteCounts();
