@@ -28,20 +28,35 @@ async function loadRandomSongs() {
         const list = document.getElementById('randomSongs');
         list.innerHTML = ''; // Eski listeyi temizle
 
-        for (const song of json.random_3_songs) {
+        json.random_3_songs.forEach((song, index) => {
             const li = document.createElement('li');
             const a = document.createElement('a');
             a.href = song.url;
             a.textContent = song.title;
-            a.target = '_blank'; // Yeni sekmede aç
+            a.target = '_blank';
+
+            // 🗳️ Oy verme işlemi: linke tıklanınca oy gönder
+            a.addEventListener('click', async () => {
+                try {
+                    await fetch(`/${isletme}/vote/${index}`, {
+                        method: 'POST'
+                    });
+                    console.log(`${index}. şarkıya oy verildi`);
+                    loadVoteCounts(); // Oy sayısını güncelle
+                } catch (e) {
+                    console.error('Oy gönderilemedi:', e);
+                }
+            });
+
             li.appendChild(a);
             list.appendChild(li);
-        }
+        });
     } catch (e) {
         document.getElementById('randomSongs').innerHTML = '<li>Veri alınamadı</li>';
         console.error(e);
     }
 }
+
 
 // 🆕 Oy sayacı verisini yükle
 async function loadVoteCounts() {
