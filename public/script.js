@@ -61,44 +61,6 @@ async function loadRandomSongs() {
             const span = document.createElement('span');
             span.textContent = song.title;
 
-            span.addEventListener('click', async () => {
-                console.log(`🖱️ ${song.title} tıklandı (index: ${index})`);
-
-                const voteEntry = voteStatus[songSetKey];
-                const now = Date.now();
-                const fiveMinutes = 5 * 60 * 1000;
-
-                const hasVoted = voteEntry && voteEntry.voted && (now - voteEntry.time < fiveMinutes);
-                console.log('⏱️ Oy kontrolü:', { voteEntry, now, hasVoted });
-
-                if (hasVoted) {
-                    console.warn('🚫 Oy zaten verilmiş, işlem durduruldu');
-                    alert('Bu şarkı seti için zaten oy verdiniz. Yeni şarkılar gelene kadar tekrar oy veremezsiniz.');
-                    return;
-                }
-
-                try {
-                    console.log(`📨 Oy gönderiliyor: /${isletme}/vote/${index}`);
-                    await fetch(`/${isletme}/vote/${index}`, {
-                        method: 'POST'
-                    });
-                    console.log('✅ Oy başarıyla gönderildi');
-
-                    voteStatus[songSetKey] = {
-                        voted: true,
-                        time: Date.now()
-                    };
-                    localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
-                    console.log('💾 Oy durumu güncellendi:', voteStatus);
-
-                    span.style.fontWeight = 'bold';
-                    span.textContent += ' ✅ Oy verildi!';
-                    loadVoteCounts();
-                } catch (e) {
-                    console.error('❌ Oy gönderilemedi:', e);
-                }
-            });
-
 
             span.style.cursor = 'pointer';
             span.style.textDecoration = 'underline';
