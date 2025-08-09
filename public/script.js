@@ -135,7 +135,7 @@ async function loadVoteCounts() {
 
 function cleanOldVotes() {
     const now = Date.now();
-    const fiveMinutes = 5 * 60 * 1000; // 5 dakika milisaniye cinsinden
+    const fiveMinutes = 1 * 60 * 1000; // 5 dakika milisaniye cinsinden
     const voteStatusRaw = localStorage.getItem('voteStatus');
     console.log('🧾 Temizlik başlıyor. voteStatusRaw:', voteStatusRaw);
 
