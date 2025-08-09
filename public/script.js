@@ -60,6 +60,46 @@ async function loadRandomSongs() {
             const li = document.createElement('li');
             const span = document.createElement('span');
             span.textContent = song.title;
+
+            span.addEventListener('click', async () => {
+                console.log(`🖱️ ${song.title} tıklandı (index: ${index})`);
+
+                const voteEntry = voteStatus[songSetKey];
+                const now = Date.now();
+                const fiveMinutes = 5 * 60 * 1000;
+
+                const hasVoted = voteEntry && voteEntry.voted && (now - voteEntry.time < fiveMinutes);
+                console.log('⏱️ Oy kontrolü:', { voteEntry, now, hasVoted });
+
+                if (hasVoted) {
+                    console.warn('🚫 Oy zaten verilmiş, işlem durduruldu');
+                    alert('Bu şarkı seti için zaten oy verdiniz. Yeni şarkılar gelene kadar tekrar oy veremezsiniz.');
+                    return;
+                }
+
+                try {
+                    console.log(`📨 Oy gönderiliyor: /${isletme}/vote/${index}`);
+                    await fetch(`/${isletme}/vote/${index}`, {
+                        method: 'POST'
+                    });
+                    console.log('✅ Oy başarıyla gönderildi');
+
+                    voteStatus[songSetKey] = {
+                        voted: true,
+                        time: Date.now()
+                    };
+                    localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
+                    console.log('💾 Oy durumu güncellendi:', voteStatus);
+
+                    span.style.fontWeight = 'bold';
+                    span.textContent += ' ✅ Oy verildi!';
+                    loadVoteCounts();
+                } catch (e) {
+                    console.error('❌ Oy gönderilemedi:', e);
+                }
+            });
+
+
             span.style.cursor = 'pointer';
             span.style.textDecoration = 'underline';
             span.style.color = '#007bff';
@@ -131,26 +171,33 @@ async function loadVoteCounts() {
 }
 
 
-
 function cleanOldVotes() {
     const now = Date.now();
     const fiveMinutes = 5 * 60 * 1000;
     const voteStatusRaw = localStorage.getItem('voteStatus');
-    const voteStatus = JSON.parse(voteStatusRaw || '{}');
+    console.log('🧾 Temizlik başlıyor. voteStatusRaw:', voteStatusRaw);
 
+    const voteStatus = JSON.parse(voteStatusRaw || '{}');
     let updated = false;
 
     for (let key in voteStatus) {
         const entry = voteStatus[key];
+        console.log(`🔍 Kontrol edilen anahtar: "${key}", entry:`, entry);
+
         if (entry?.time && now - entry.time > fiveMinutes) {
+            console.log(`🧹 Siliniyor: "${key}" çünkü ${now - entry.time}ms geçmiş`);
             delete voteStatus[key];
             updated = true;
+        } else {
+            console.log(`⏳ Silinmedi: "${key}" çünkü henüz ${now - entry.time}ms geçmiş`);
         }
     }
 
     if (updated) {
         localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
-        console.log('🧹 Eski oy verileri temizlendi');
+        console.log('✅ Güncellenmiş voteStatus:', voteStatus);
+    } else {
+        console.log('ℹ️ Temizlenecek veri bulunamadı.');
     }
 }
 
@@ -168,5 +215,3 @@ setInterval(() => {
     loadVoteCounts();
     cleanOldVotes();
 }, 5000);
-
-
