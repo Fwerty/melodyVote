@@ -44,7 +44,13 @@ async function loadRandomSongs() {
         console.log('📦 localStorage.voteStatus:', voteStatusRaw);
 
         const voteStatus = JSON.parse(voteStatusRaw || '{}');
-        const hasVoted = voteStatus[songSetKey] === true;
+
+        const voteEntry = voteStatus[songSetKey];
+        const now = Date.now();
+        const fiveMinutes = 5 * 60 * 1000;
+
+        const hasVoted = voteEntry && voteEntry.voted && (now - voteEntry.time < fiveMinutes);
+
         console.log('🔍 Bu şarkı seti için oy verilmiş mi?', hasVoted);
 
         json.random_3_songs.forEach((song, index) => {
@@ -71,8 +77,12 @@ async function loadRandomSongs() {
                     });
                     console.log('✅ Oy başarıyla gönderildi');
 
-                    voteStatus[songSetKey] = true;
+                    voteStatus[songSetKey] = {
+                        voted: true,
+                        time: Date.now()
+                    };
                     localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
+
                     console.log('💾 Oy durumu güncellendi:', voteStatus);
 
                     span.style.fontWeight = 'bold';
@@ -116,15 +126,40 @@ async function loadVoteCounts() {
 }
 
 
+function cleanOldVotes() {
+    const now = Date.now();
+    const fiveMinutes = 5 * 60 * 1000;
+    const voteStatusRaw = localStorage.getItem('voteStatus');
+    const voteStatus = JSON.parse(voteStatusRaw || '{}');
+
+    let updated = false;
+
+    for (let key in voteStatus) {
+        const entry = voteStatus[key];
+        if (entry?.time && now - entry.time > fiveMinutes) {
+            delete voteStatus[key];
+            updated = true;
+        }
+    }
+
+    if (updated) {
+        localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
+        console.log('🧹 Eski oy verileri temizlendi');
+    }
+}
+
+
+
 // İlk yükleme
 loadSong();
 loadRandomSongs();
 loadVoteCounts();
+cleanOldVotes(); // 
 
 // Periyodik güncelleme
 setInterval(() => {
     loadSong();
     loadRandomSongs();
     loadVoteCounts();
+    cleanOldVotes();
 }, 5000);
-
