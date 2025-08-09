@@ -135,34 +135,50 @@ async function loadVoteCounts() {
 
 function cleanOldVotes() {
     const now = Date.now();
-    const fiveMinutes = 5 * 60 * 1000;
+    const fiveMinutes = 5 * 60 * 1000; // 5 dakika milisaniye cinsinden
     const voteStatusRaw = localStorage.getItem('voteStatus');
     console.log('🧾 Temizlik başlıyor. voteStatusRaw:', voteStatusRaw);
 
-    const voteStatus = JSON.parse(voteStatusRaw || '{}');
-    let updated = false;
-
-    for (let key in voteStatus) {
-        const entry = voteStatus[key];
-        console.log(`🔍 Kontrol edilen anahtar: "${key}", entry:`, entry);
-
-        if (entry?.time && now - entry.time > fiveMinutes) {
-            console.log(`🧹 Siliniyor: "${key}" çünkü ${now - entry.time}ms geçmiş`);
-            delete voteStatus[key];
-            updated = true;
-        } else {
-            console.log(`⏳ Silinmedi: "${key}" çünkü henüz ${now - entry.time}ms geçmiş`);
-        }
+    if (!voteStatusRaw) {
+        console.log('ℹ️ Temizlenecek veri bulunamadı (boş localStorage).');
+        return;
     }
 
-    if (updated) {
-        localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
-        console.log('✅ Güncellenmiş voteStatus:', voteStatus);
-    } else {
-        console.log('ℹ️ Temizlenecek veri bulunamadı.');
+    try {
+        const voteStatus = JSON.parse(voteStatusRaw);
+        let updated = false;
+
+        Object.keys(voteStatus).forEach(key => {
+            const entry = voteStatus[key];
+            console.log(`🔍 Kontrol edilen anahtar: "${key}", entry:`, entry);
+
+            if (entry && typeof entry === 'object' && entry.time) {
+                const elapsedTime = now - entry.time;
+                console.log(`⏳ Geçen süre: ${elapsedTime}ms`);
+
+                if (elapsedTime > fiveMinutes) {
+                    console.log(`🧹 Siliniyor: "${key}" (${elapsedTime}ms geçmiş)`);
+                    delete voteStatus[key];
+                    updated = true;
+                }
+            } else {
+                console.log(`❌ Geçersiz entry: "${key}", siliniyor...`);
+                delete voteStatus[key];
+                updated = true;
+            }
+        });
+
+        if (updated) {
+            localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
+            console.log('✅ Güncellenmiş voteStatus:', voteStatus);
+        } else {
+            console.log('ℹ️ Temizlenecek veri bulunamadı.');
+        }
+    } catch (e) {
+        console.error('❌ localStorage verisi parse edilemedi, sıfırlanıyor:', e);
+        localStorage.removeItem('voteStatus');
     }
 }
-
 
 // İlk yükleme
 loadSong();
