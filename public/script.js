@@ -10,8 +10,8 @@ async function loadSong() {
 
         const songText = json.current_song || '—';
         document.getElementById('song').textContent = songText;
-        document.getElementById('updated').textContent =
-            'Güncellendi: ' + new Date().toLocaleTimeString('tr-TR');
+        // document.getElementById('updated').textContent =
+        //     'Güncellendi: ' + new Date().toLocaleTimeString('tr-TR');
     } catch (e) {
         document.getElementById('song').textContent = 'Veri alınamadı';
         console.error(e);
