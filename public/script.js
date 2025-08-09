@@ -45,11 +45,14 @@ async function loadRandomSongs() {
 
         const voteStatus = JSON.parse(voteStatusRaw || '{}');
 
+
         const voteEntry = voteStatus[songSetKey];
         const now = Date.now();
         const fiveMinutes = 5 * 60 * 1000;
 
         const hasVoted = voteEntry && voteEntry.voted && (now - voteEntry.time < fiveMinutes);
+
+
 
         console.log('🔍 Bu şarkı seti için oy verilmiş mi?', hasVoted);
 
@@ -77,11 +80,13 @@ async function loadRandomSongs() {
                     });
                     console.log('✅ Oy başarıyla gönderildi');
 
+
                     voteStatus[songSetKey] = {
                         voted: true,
                         time: Date.now()
                     };
                     localStorage.setItem('voteStatus', JSON.stringify(voteStatus));
+
 
                     console.log('💾 Oy durumu güncellendi:', voteStatus);
 
@@ -126,6 +131,7 @@ async function loadVoteCounts() {
 }
 
 
+
 function cleanOldVotes() {
     const now = Date.now();
     const fiveMinutes = 5 * 60 * 1000;
@@ -149,12 +155,11 @@ function cleanOldVotes() {
 }
 
 
-
 // İlk yükleme
 loadSong();
 loadRandomSongs();
 loadVoteCounts();
-cleanOldVotes(); // 
+cleanOldVotes();
 
 // Periyodik güncelleme
 setInterval(() => {
@@ -163,3 +168,5 @@ setInterval(() => {
     loadVoteCounts();
     cleanOldVotes();
 }, 5000);
+
+
