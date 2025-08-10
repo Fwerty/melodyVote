@@ -112,8 +112,8 @@ router.get('/yazilimci_minikler', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'yazilimci_minikler.html'));
 });
 
-router.get('/yazilimci_minikler/abdullah', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'abdullah.html'));
+router.get('/yazilimci_minikler/omer', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'omer.html'));
 });
 
 // 🏠 Varsayılan index.html
