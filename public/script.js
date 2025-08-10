@@ -110,7 +110,6 @@ async function loadRandomSongs() {
 
 
 // 🆕 Oy sayacı verisini yükle
-// Oy sayacı verisini yükle
 async function loadVoteCounts() {
     try {
         const res = await fetch(`/${isletme}/sayac`);
@@ -120,22 +119,13 @@ async function loadVoteCounts() {
         const list = document.getElementById('voteCounts');
         list.innerHTML = ''; // Önceki verileri temizle
 
-        // random_3_songs verisini tekrar alıyoruz ki şarkı isimlerini gösterebilelim
-        const songsRes = await fetch(`/${isletme}/random_3_songs`);
-        if (!songsRes.ok) throw new Error('Şarkı listesi alınamadı');
-        const songsJson = await songsRes.json();
-
         json.sayac.forEach((count, index) => {
             const li = document.createElement('li');
-            li.style.listStyle = 'none'; // Madde işaretini kaldır
-            li.style.color = 'white';    // Yazı rengi beyaz
-            li.style.fontSize = '18px';
-            li.style.fontWeight = 'bold';
-            li.textContent = `${songsJson.random_3_songs[index].title} (${count} oy)`;
+            li.textContent = `${index + 1}. şarkı: ${count} oy`;
             list.appendChild(li);
         });
     } catch (e) {
-        document.getElementById('voteCounts').innerHTML = '<li style="list-style:none; color:white;">Veri alınamadı</li>';
+        document.getElementById('voteCounts').innerHTML = '<li>Veri alınamadı</li>';
         console.error(e);
     }
 }
