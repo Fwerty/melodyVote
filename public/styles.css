@@ -58,6 +58,7 @@ body {
 }
 
 .button-list li a {
+    text-align: center;
     color: white;
     /* Yazı rengi beyaz */
     text-decoration: none;
