@@ -8,9 +8,9 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
-	const card = document.getElementById("AbdullahCard");
+	const card = document.getElementById("OmerCard");
 	card.addEventListener("click", function () {
-		window.location.href = "https://sosyalkutuphane.online/yazilimci_minikler/abdullah";
+		window.location.href = "https://sosyalkutuphane.online/yazilimci_minikler/omer";
 	});
 });
 
