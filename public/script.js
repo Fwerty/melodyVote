@@ -62,8 +62,7 @@ async function loadRandomSongs() {
 
 
             span.style.cursor = 'pointer';
-            span.style.textDecoration = 'underline';
-            span.style.color = '#007bff';
+            span.style.color = 'white';
 
             span.addEventListener('click', async () => {
                 console.log(`🖱️ ${song.title} tıklandı (index: ${index})`);
