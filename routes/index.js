@@ -116,6 +116,11 @@ router.get('/yazilimci_minikler/omer', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'omer.html'));
 });
 
+
+router.get('/yazilimci_minikler/ecem', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'ecem.html'));
+});
+
 // 🏠 Varsayılan index.html
 router.get('/:isletme', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));

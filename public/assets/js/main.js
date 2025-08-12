@@ -15,6 +15,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+document.addEventListener("DOMContentLoaded", function () {
+	const card = document.getElementById("EcemCard");
+	card.addEventListener("click", function () {
+		window.location.href = "https://sosyalkutuphane.online/yazilimci_minikler/ecem";
+	});
+});
+
+
+
 (function ($) {
 
 	var $window = $(window),
