@@ -109,16 +109,16 @@ router.get('/:isletme/sayac', (req, res) => {
 
 // 📄 Statik HTML dosyaları
 router.get('/yazilimci_minikler', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'yazilimci_minikler.html'));
+    res.sendFile(path.join(__dirname, '..', 'public', "yazilimci_minikler", 'yazilimci_minikler.html'));
 });
 
 router.get('/yazilimci_minikler/omer', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'omer.html'));
+    res.sendFile(path.join(__dirname, '..', 'public', "yazilimci_minikler", 'omer.html'));
 });
 
 
 router.get('/yazilimci_minikler/ecem', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'ecem.html'));
+    res.sendFile(path.join(__dirname, '..', 'public', "yazilimci_minikler", 'ecem.html'));
 });
 
 // 🏠 Varsayılan index.html
