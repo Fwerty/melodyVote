@@ -10,7 +10,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 	const card = document.getElementById("OmerCard");
 	card.addEventListener("click", function () {
-		window.location.href = "https://sosyalkutuphane.online/yazilimci_minikler/omer";
+		window.location.href = "/yazilimci_minikler/omer";
 	});
 });
 
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
 	const card = document.getElementById("EcemCard");
 	card.addEventListener("click", function () {
-		window.location.href = "https://sosyalkutuphane.online/yazilimci_minikler/ecem";
+		window.location.href = "/yazilimci_minikler/ecem";
 	});
 });
 
