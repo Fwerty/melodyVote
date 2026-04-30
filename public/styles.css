@@ -177,6 +177,71 @@ button:hover {
     margin-top: 60px;
 }
 
+.chat-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.chat-messages {
+    height: 220px;
+    overflow-y: auto;
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    text-align: left;
+}
+
+.chat-message {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 14px;
+    line-height: 1.35;
+    margin: 0 0 10px 0;
+    word-break: break-word;
+}
+
+.chat-message-time {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    margin-right: 8px;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+.chat-input::placeholder {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.chat-send {
+    padding: 12px 18px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.chat-status {
+    display: block;
+    margin-top: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    min-height: 18px;
+}
+
 .oy-durumu p {
     font-size: 16px;
     color: #ffffff;
