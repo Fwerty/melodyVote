@@ -47,11 +47,14 @@ router.post('/:isletme/random_3_songs', (req, res) => {
         return res.status(403).json({ error: 'Geçersiz API Key' });
     }
 
-    const songs = req.body.songs || req.body;
 
-    if (!Array.isArray(songs) || songs.length !== 3) {
-        return res.status(400).json({ error: 'Tam olarak 3 şarkı içeren bir JSON dizisi gönderin.' });
-    }
+  const songs = req.body.songs || req.body;
+
+  if (!Array.isArray(songs) || songs.length < 3) {
+    return res
+      .status(400)
+      .json({ error: "En az 3 şarkı içeren bir JSON dizisi gönderin." });
+  }
 
     const invalid = songs.find(s => !s || typeof s.title !== 'string' || typeof s.url !== 'string');
     if (invalid) {
