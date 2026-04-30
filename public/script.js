@@ -2,6 +2,8 @@ const parts = location.pathname.split("/");
 const isletme = parts[1];
 
 let currentSongTitles = [];
+let chatLastTs = 0;
+let chatTimer = null;
 
 // Mevcut fonksiyon
 async function loadSong() {
@@ -191,11 +193,148 @@ function cleanOldVotes() {
   }
 }
 
+// -------------------------------------------
+// 💬 Chat (anonim, polling)
+// -------------------------------------------
+function formatTime(ts) {
+  try {
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "";
+  }
+}
+
+function setChatStatus(text) {
+  const el = document.getElementById("chatStatus");
+  if (!el) return;
+  el.textContent = text || "";
+}
+
+function appendChatMessages(messages) {
+  const box = document.getElementById("chatMessages");
+  if (!box) return;
+
+  const shouldStickToBottom =
+    Math.abs(box.scrollHeight - box.scrollTop - box.clientHeight) < 10;
+
+  for (const msg of messages) {
+    const p = document.createElement("p");
+    p.className = "chat-message";
+
+    const time = document.createElement("span");
+    time.className = "chat-message-time";
+    time.textContent = formatTime(msg.ts);
+
+    const text = document.createElement("span");
+    text.textContent = msg.text;
+
+    p.appendChild(time);
+    p.appendChild(text);
+    box.appendChild(p);
+
+    if (typeof msg.ts === "number" && msg.ts > chatLastTs) {
+      chatLastTs = msg.ts;
+    }
+  }
+
+  // Basit limit: DOM büyümesin
+  while (box.childNodes.length > 200) {
+    box.removeChild(box.firstChild);
+  }
+
+  if (shouldStickToBottom) {
+    box.scrollTop = box.scrollHeight;
+  }
+}
+
+async function pollChat() {
+  try {
+    const res = await fetch(
+      `/${isletme}/chat/messages?after=${encodeURIComponent(chatLastTs)}&limit=50`,
+    );
+    if (!res.ok) {
+      setChatStatus("Sohbet baglantisi kurulamadı.");
+      return;
+    }
+    const json = await res.json();
+    const messages = Array.isArray(json.messages) ? json.messages : [];
+    if (messages.length) {
+      appendChatMessages(messages);
+    }
+    setChatStatus("");
+  } catch (e) {
+    setChatStatus("Sohbet baglantisi kurulamadı.");
+    console.error(e);
+  }
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  if (!input) return;
+
+  const text = String(input.value || "").trim();
+  if (!text) return;
+
+  input.value = "";
+  setChatStatus("Gonderiliyor...");
+
+  try {
+    const res = await fetch(`/${isletme}/chat/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+
+    if (res.status === 429) {
+      setChatStatus("Cok hizli yaziyorsun. 2 saniye bekle.");
+      return;
+    }
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => null);
+      setChatStatus(errJson?.error || "Mesaj gonderilemedi.");
+      return;
+    }
+
+    const json = await res.json();
+    if (json && json.message) {
+      appendChatMessages([json.message]);
+    }
+    setChatStatus("");
+  } catch (e) {
+    setChatStatus("Mesaj gonderilemedi.");
+    console.error(e);
+  }
+}
+
+function initChat() {
+  const sendBtn = document.getElementById("chatSendBtn");
+  const input = document.getElementById("chatInput");
+
+  if (sendBtn) {
+    sendBtn.addEventListener("click", () => sendChatMessage());
+  }
+  if (input) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+  }
+
+  pollChat();
+  if (chatTimer) clearInterval(chatTimer);
+  chatTimer = setInterval(pollChat, 1000);
+}
+
 // İlk yükleme
 loadSong();
 loadRandomSongs();
 loadVoteCounts();
 cleanOldVotes();
+initChat();
 
 // Periyodik güncelleme
 setInterval(() => {
