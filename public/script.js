@@ -3,18 +3,6 @@ const isletme = parts[1];
 
 let currentSongTitles = [];
 
-function updateVoteOptionsTitle(count) {
-  const titleEl = document.getElementById("voteOptionsTitle");
-  if (!titleEl) return;
-
-  if (count === 4) {
-    titleEl.textContent = "Aşağıdaki dört şarkıdan birine oy verebilirsiniz";
-    return;
-  }
-
-  titleEl.textContent = "Aşağıdaki üç şarkıdan birine oy verebilirsiniz";
-}
-
 // Mevcut fonksiyon
 async function loadSong() {
   try {
@@ -45,16 +33,12 @@ async function loadRandomSongs() {
     const json = await res.json();
     console.log("✅ Şarkı verisi alındı:", json);
 
-    const randomSongs = Array.isArray(json.random_3_songs)
-      ? json.random_3_songs
-      : [];
-    currentSongTitles = randomSongs.map((song) => song.title);
-    updateVoteOptionsTitle(currentSongTitles.length);
+    currentSongTitles = json.random_3_songs.map((song) => song.title);
 
     const list = document.getElementById("randomSongs");
     list.innerHTML = "";
 
-    const songSetKey = generateSongSetKey(randomSongs);
+    const songSetKey = generateSongSetKey(json.random_3_songs);
     const voteStatusRaw = localStorage.getItem("voteStatus");
     console.log("📦 localStorage.voteStatus:", voteStatusRaw);
 
@@ -69,7 +53,7 @@ async function loadRandomSongs() {
 
     console.log("🔍 Bu şarkı seti için oy verilmiş mi?", hasVoted);
 
-    randomSongs.forEach((song, index) => {
+    json.random_3_songs.forEach((song, index) => {
       const li = document.createElement("li");
       const span = document.createElement("span");
       span.textContent = song.title;
@@ -114,15 +98,10 @@ async function loadRandomSongs() {
       li.appendChild(span);
       list.appendChild(li);
     });
-
-    if (randomSongs.length === 0) {
-      list.innerHTML = "<li>Şarkı listesi boş</li>";
-    }
   } catch (e) {
     console.error("❌ Şarkılar yüklenemedi:", e);
     document.getElementById("randomSongs").innerHTML =
       "<li>Veri alınamadı</li>";
-    updateVoteOptionsTitle(3);
   }
 }
 
@@ -132,15 +111,11 @@ async function loadVoteCounts() {
     const res = await fetch(`/${isletme}/sayac`);
     if (!res.ok) throw new Error("Oy sayacı verisi alınamadı");
     const json = await res.json();
-    const sayac = Array.isArray(json.sayac) ? json.sayac : [];
 
     const list = document.getElementById("voteCounts");
     list.innerHTML = "";
 
-    const rowCount = Math.max(currentSongTitles.length, sayac.length);
-
-    for (let index = 0; index < rowCount; index++) {
-      const count = sayac[index] || 0;
+    json.sayac.forEach((count, index) => {
       const li = document.createElement("li");
       li.style.listStyle = "none";
       li.style.color = "white";
@@ -150,7 +125,7 @@ async function loadVoteCounts() {
       const title = currentSongTitles[index] || `Şarkı ${index + 1}`;
       li.textContent = `${title} (${count} oy)`;
       list.appendChild(li);
-    }
+    });
   } catch (e) {
     document.getElementById("voteCounts").innerHTML =
       '<li style="list-style:none; color:white;">Veri alınamadı</li>';
