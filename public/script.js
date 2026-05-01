@@ -4,6 +4,7 @@ const isletme = parts[1];
 let currentSongTitles = [];
 let chatLastTs = 0;
 let chatTimer = null;
+const chatSeenMessageIds = new Set();
 
 // Mevcut fonksiyon
 async function loadSong() {
@@ -219,8 +220,16 @@ function appendChatMessages(messages) {
     Math.abs(box.scrollHeight - box.scrollTop - box.clientHeight) < 10;
 
   for (const msg of messages) {
+    // Aynı mesajın iki kez eklenmesini engelle (poll + send yarış durumu)
+    const id = msg && typeof msg.id === "string" ? msg.id : null;
+    if (id) {
+      if (chatSeenMessageIds.has(id)) continue;
+      chatSeenMessageIds.add(id);
+    }
+
     const p = document.createElement("p");
     p.className = "chat-message";
+    if (id) p.dataset.msgId = id;
 
     const time = document.createElement("span");
     time.className = "chat-message-time";
